@@ -10,23 +10,16 @@
  */
 
 module.exports = {
-  // By default, Docusaurus generates a sidebar from the docs folder structure
-    tutorialSidebar: [
-    {
-      type: 'category',
-      label: 'Get Started',
-      items: ['ros2-basics', 'digital-twin-fundamentals'],
-    },
-  ],
-
-  // But you can create a sidebar manually
-  /*
   tutorialSidebar: [
     {
       type: 'category',
-      label: 'Tutorial',
-      items: ['hello'],
+      label: 'Chapter 1: The Robotic Nervous System',
+      items: ['chapter1/module1'],
+    },
+    {
+      type: 'category',
+      label: 'Chapter 2: The Digital Twin',
+      items: ['chapter2/module2'],
     },
   ],
-   */
 };
