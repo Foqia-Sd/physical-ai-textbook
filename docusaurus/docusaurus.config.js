@@ -5,7 +5,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 (module.exports = {
   title: 'Physical AI & Humanoid Robotics',
-  url: 'https://physical-ai-textbook-lilac.vercel.app/', //https://Foqia-Sd.github.io
+  url: '//https://Foqia-Sd.github.io',
   baseUrl: '/physical-ai-textbook/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -21,7 +21,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/Foqia-Sd/physical-ai-textbook/edit/main/',
+          editUrl: 'https://github.com/facebook/docusaurus/edit/main/website/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
