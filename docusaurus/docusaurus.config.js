@@ -5,7 +5,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 (module.exports = {
   title: 'Physical AI & Humanoid Robotics',
-  url: 'https://physical-ai-textbook-mu.vercel.app/', //https://Foqia-Sd.github.io
+  url: 'https://Foqia-Sd.github.io',
   baseUrl: '/physical-ai-textbook/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
