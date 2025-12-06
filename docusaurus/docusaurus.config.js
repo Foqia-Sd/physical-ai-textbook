@@ -21,7 +21,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/facebook/docusaurus/edit/main/website/',
+          editUrl: 'https://github.com/Foqia-Sd/physical-ai-textbook/edit/main/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
