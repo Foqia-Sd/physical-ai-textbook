@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunkdocusaurus=globalThis.webpackChunkdocusaurus||[]).push([[782],{6555:a=>{a.exports=JSON.parse('{"allTagsPath":"/physical-ai-textbook/blog/tags","slug":"/physical-ai-textbook/blog/tags/hola","name":"hola","count":1,"permalink":"/physical-ai-textbook/blog/tags/hola"}')}}]);
