@@ -21,5 +21,15 @@ module.exports = {
       label: 'Chapter 2: The Digital Twin',
       items: ['chapter2/module2'],
     },
+    {
+      type: 'category',
+      label: 'Chapter 3: The AI-Robot Brain',
+      items: ['chapter3/module3'],
+    },
+    {
+      type: 'category',
+      label: 'Chapter 4: Vision-Language-Action (VLA)',
+      items: ['chapter4/module4'],
+    },
   ],
 };

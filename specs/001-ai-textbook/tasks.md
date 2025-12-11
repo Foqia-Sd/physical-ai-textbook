@@ -22,6 +22,29 @@ This document outlines the tasks for implementing the AI-Native Physical AI Text
     *   Discuss common sensor types: LiDAR, Depth, IMU.
     *   Refer to Context-7 MCP documentation for accuracy.
 
+## Module 3: The AI-Robot Brain (NVIDIA Isaac™)
+
+- **Focus:** Advanced perception and training  
+- **NVIDIA Isaac Sim:** Photorealistic simulation and synthetic data generation  
+- **Isaac ROS:** Hardware-accelerated VSLAM (Visual SLAM) and navigation  
+- **Nav2:** Path planning for bipedal humanoid movement  
+
+---
+
+## Module 4: Vision-Language-Action (VLA)
+
+- **Focus:** The convergence of LLMs and Robotics  
+- **Voice-to-Action:** Using OpenAI Whisper for voice commands  
+- **Cognitive Planning:** Using LLMs to translate natural language (e.g., “Clean the room”) into a sequence of ROS 2 actions  
+- **Capstone Project: The Autonomous Humanoid**  
+  - A simulated robot receives a voice command  
+  - Plans a path  
+  - Navigates obstacles  
+  - Identifies an object with computer vision  
+  - Manipulates it  
+
+---
+
 ## Task 2: Scaffold FastAPI Backend
 
 **Description**: Set up the core FastAPI backend with ingest and query capabilities, integrated with Qdrant and Neon Postgres.

@@ -5,7 +5,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 (module.exports = {
   title: 'Physical AI & Humanoid Robotics',
-  url: '//https://Foqia-Sd.github.io',
+  url: 'https://Foqia-Sd.github.io',
   baseUrl: '/physical-ai-textbook/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -45,6 +45,12 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
             docId: 'chapter1/module1',
             position: 'left',
             label: 'Book',
+          },
+          {
+            position: 'left',
+            label: 'Chatbot',
+            to: '/', // Link to homepage since widget is always available
+            'aria-label': 'AI Chatbot',
           },
           {
             href: 'https://github.com/facebook/docusaurus',
