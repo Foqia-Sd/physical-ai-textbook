@@ -1,0 +1,92 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Builds
+dist/
+build/
+.next/
+.nuxt/
+public/dist/
+out/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Browser extensions
+dev-tools/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+.DS_Store
+
+# Docusaurus
+.docusaurus/
+.cache/
+.ssg-cache/
+
+# Local files that might be in the repo
+*.local
+
+# History
+history/
+
+# Backend specific ignores (in addition to individual .gitignores)
+back/__pycache__/
+back/.venv/
+back/.env
+
+# Auth server specific ignores
+auth-server/node_modules/
+auth-server/.env

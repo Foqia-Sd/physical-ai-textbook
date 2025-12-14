@@ -1,13 +1,11 @@
-// src/theme/Root.js
 import React from 'react';
-import ChatWidget from '@site/src/components/ChatWidget';
+import { AuthProvider } from '../contexts/AuthContext';
 
-// Default implementation, that you can customize
-export default function Root({children}) {
+// Provide authentication context to the app
+export default function Root({ children }) {
   return (
-    <>
+    <AuthProvider>
       {children}
-      <ChatWidget />
-    </>
+    </AuthProvider>
   );
 }

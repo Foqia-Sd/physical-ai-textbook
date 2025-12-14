@@ -1,204 +1,174 @@
-import React, { useState, useRef, useEffect } from 'react';
-import styles from './styles.module.css';
+import React, { useState, useEffect, useRef } from 'react';
+import './styles.css';
+import { addAuthHeaders } from '@site/src/utils/auth-client';
 
-// We'll initialize ragAgent in the component
-let ragAgent = null;
-
-const initialMessages = [];
-
-function Message({ sender, text }) {
+const Message = ({ sender, text, time }) => {
+  const isUser = sender === 'user';
   return (
-    <div className={`${styles.message} ${sender === 'ai' ? styles.aiMessage : styles.userMessage}`}>
-      <div className={styles.messageContent}>{text}</div>
+    <div className={`message ${isUser ? 'user-message' : 'ai-message'}`}>
+      <div className="message-content">
+        <span className="message-text">{text}</span>
+        <span className="message-time">{time}</span>
+      </div>
     </div>
   );
-}
+};
 
-export default function ChatWidget() {
-  const [isOpen, setIsOpen] = useState(false); // Start closed to avoid potential initialization issues
-  const [messages, setMessages] = useState(initialMessages);
-  const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedText, setSelectedText] = useState('');
+const ChatWidget = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Effect to handle text selection
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.getSelection) {
-      const handleMouseUp = () => {
-        const selection = window.getSelection().toString().trim();
-        if (selection) {
-          setSelectedText(selection);
-          if (!isOpen) {
-            setIsOpen(true); // Open chat if text is selected
-          }
-        }
-      };
-
-      document.addEventListener('mouseup', handleMouseUp);
-      return () => document.removeEventListener('mouseup', handleMouseUp);
+    if (isOpen) {
+      scrollToBottom();
     }
-  }, [isOpen]);
+  }, [messages, isTyping, isOpen]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const handleSend = async () => {
+    if (input.trim() === '') return;
 
-  const toggleChat = () => setIsOpen(!isOpen);
+    const currentInput = input;
 
-  const handleInputChange = (e) => setInputValue(e.target.value);
+    const userMessage = {
+      sender: 'user',
+      text: currentInput,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
 
-  // Initialize RAG Agent
-  const initializeRagAgent = () => {
-    try {
-      // Try using relative import path
-      const ragAgentModule = require('../../utils/RagAgent');
-      ragAgent = ragAgentModule.default;
-
-      if (ragAgent && typeof ragAgent.setBackendUrl === 'function') {
-        ragAgent.setBackendUrl('http://localhost:8000');
-        console.log('RAG Agent initialized with backend connection');
-        if (ragAgent.getTools) {
-          console.log('Available tools:', ragAgent.getTools());
-        }
-      } else {
-        console.error('RAG Agent is not properly loaded');
-        // Create a mock ragAgent for graceful degradation
-        ragAgent = {
-          query: async (message, context = {}) => {
-            console.error('RagAgent not available, returning mock response');
-            return {
-              response: "AI assistant is currently unavailable. Please try again later.",
-              sources: [],
-              context: context
-            };
-          },
-          setBackendUrl: () => {},
-          getTools: () => ['mock-tools']
-        };
-      }
-    } catch (error) {
-      console.error('Error initializing RAG Agent:', error);
-      // Create a mock ragAgent for graceful degradation
-      ragAgent = {
-        query: async (message, context = {}) => {
-          console.error('RagAgent not available due to error, returning mock response');
-          return {
-            response: "AI assistant is currently unavailable. Please try again later.",
-            sources: [],
-            context: context
-          };
-        },
-        setBackendUrl: () => {},
-        getTools: () => ['mock-tools']
-      };
-    }
-  };
-
-  // Call initialization when component mounts
-  useEffect(() => {
-    initializeRagAgent();
-  }, []);
-
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
-
-    const userMessage = { sender: 'user', text: inputValue };
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
-    setInputValue('');
-    setIsLoading(true);
-
-    const context = selectedText;
-    setSelectedText('');
+    setMessages(prevMessages => [...prevMessages, userMessage]);
+    setInput('');
+    setIsTyping(true);
 
     try {
-      // Check if ragAgent is properly loaded before using it
-      if (!ragAgent) {
-        console.error('RagAgent is not loaded');
-        setIsLoading(false);
-        const errorMessage = { sender: 'ai', text: 'RagAgent is not loaded. Please refresh the page.' };
-        setMessages((prev) => [...prev, errorMessage]);
-        return;
-      }
-
-      // Use the RAG Agent to process the query
-      const agentResponse = await ragAgent.query(userMessage.text, {
-        selectedText: context // Pass the selected text as context
+      // Use the proxy path which will be handled by Docusaurus dev server
+      const response = await fetch('/ask', {
+        method: 'POST',
+        headers: addAuthHeaders({
+          'Content-Type': 'application/json',
+        }),
+        body: JSON.stringify({ query: currentInput }),
       });
 
-      setIsLoading(false);
-
-      // Format the agent response for display
-      let responseText = agentResponse.response || 'No response generated.';
-
-      if (agentResponse.sources && agentResponse.sources.length > 0) {
-        const sourceUrls = [...new Set(agentResponse.sources.map(source => source.url))].slice(0, 3);
-        if (sourceUrls.length > 0) {
-          responseText += `\n\nSources: ${sourceUrls.join(', ')}`;
-        }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const aiResponse = { sender: 'ai', text: responseText };
-      setMessages((prev) => [...prev, aiResponse]);
+      const data = await response.json();
+
+      // FIX: backend returns data.answer, not data.response
+      const aiMessage = {
+        sender: 'ai',
+        text: data.answer,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      setMessages(prevMessages => [...prevMessages, aiMessage]);
 
     } catch (error) {
-      console.error("RAG Agent error:", error);
-      setIsLoading(false);
-      const errorMessage = { sender: 'ai', text: 'Sorry, I encountered an error processing your request. Please try again.' };
-      setMessages((prev) => [...prev, errorMessage]);
+      console.error('Error fetching AI response:', error);
+      console.log('Backend might not be running. Showing mock response.');
+
+      // Provide a mock response when backend is not available
+      const mockResponse = "I'm the AI assistant. It seems the backend server is not running. Please ensure the backend is started on port 8000.";
+
+      const errorMessage = {
+        sender: 'ai',
+        text: mockResponse,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      setMessages(prevMessages => [...prevMessages, errorMessage]);
+
+    } finally {
+      setIsTyping(false);
     }
   };
 
-  const clearSelectedText = () => setSelectedText('');
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      handleSend();
+    }
+  };
 
-  if (!isOpen) {
-    return (
-      <button className={styles.openChatButton} onClick={toggleChat}>
-        <span>Chat</span>
-      </button>
-    );
-  }
+  const toggleChat = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
-    <div className={styles.chatWindow}>
-      <div className={styles.chatHeader}>
-        <h2>AI Tutor</h2>
-        <button onClick={toggleChat} className={styles.closeButton}>&times;</button>
-      </div>
-      <div className={styles.messagesContainer}>
-        {messages.map((msg, index) => (
-          <Message key={index} {...msg} />
-        ))}
-        {isLoading && <Message sender="ai" text="Thinking..." />}
-        <div ref={messagesEndRef} />
-      </div>
-      <div className={styles.inputWrapper}>
-        {selectedText && (
-          <div className={styles.selectedTextIndicator}>
-            <span>Context: "{selectedText.substring(0, 50)}..."</span>
-            <button onClick={clearSelectedText}>&times;</button>
+    <div className="chat-floating-container">
+
+      {isOpen && (
+        <div className="chat-widget">
+
+          <div className="chat-header">
+            <h3>AI Assistant</h3>
           </div>
-        )}
-        <form onSubmit={handleSendMessage} className={styles.inputArea}>
-          <input
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange}
-            placeholder="Ask a question..."
-            className={styles.inputField}
-            disabled={isLoading}
-          />
-          <button type="submit" className={styles.sendButton} disabled={isLoading}>
-            Send
-          </button>
-        </form>
-      </div>
+
+          <div className="chat-messages">
+            {messages.length === 0 && !isTyping ? (
+              <div className="welcome-message">
+                <p>Welcome! Ask me anything about the content of this textbook.</p>
+              </div>
+            ) : (
+              messages.map((msg, index) => (
+                <Message
+                  key={index}
+                  sender={msg.sender}
+                  text={msg.text}
+                  time={msg.time}
+                />
+              ))
+            )}
+
+            {isTyping && (
+              <div className="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div className="chat-input-form">
+            <input
+              type="text"
+              className="chat-input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Type your message..."
+              disabled={isTyping}
+            />
+
+            <button
+              className="send-button"
+              onClick={handleSend}
+              disabled={isTyping || input.trim() === ''}
+            >
+              Send
+            </button>
+          </div>
+
+        </div>
+      )}
+
+      {/* Floating bubble button */}
+      <button className="chat-floating-button" onClick={toggleChat}>
+        {isOpen ? '✕' : '💬'}
+      </button>
+
     </div>
   );
-}
+};
+
+export default ChatWidget;

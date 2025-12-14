@@ -102,4 +102,45 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
         darkTheme: darkCodeTheme,
       },
     }),
+
+  // Custom fields that are not part of standard Docusaurus config
+  customFields: {
+    staticDirectories: ['static'],
+    devServer: {
+      proxy: {
+        '/api/auth': {
+          target: 'http://localhost:8001', // Auth server (Better Auth)
+          changeOrigin: true,
+          secure: false,
+        },
+        '/ask': {
+          target: 'http://localhost:8000', // Python backend for Qdrant/agents
+          changeOrigin: true,
+          secure: false,
+        }
+      }
+    }
+  },
+
+  themes: [],
+  plugins: [],
+
+  // Proxy configuration for development server (added to custom fields due to validation)
+  customFields: {
+    staticDirectories: ['static'],
+    devServer: {
+      proxy: {
+        '/api/auth': {
+          target: 'http://localhost:8001', // Auth server (Better Auth)
+          changeOrigin: true,
+          secure: false,
+        },
+        '/ask': {
+          target: 'http://localhost:8000', // Python backend for Qdrant/agents
+          changeOrigin: true,
+          secure: false,
+        }
+      }
+    }
+  }
 });
